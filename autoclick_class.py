@@ -2,6 +2,7 @@ from pynput import keyboard
 from pynput.mouse import Button, Controller
 from threading import Thread
 import time
+# import tkinter as tk
 
 
 class Autoclicker:
@@ -53,3 +54,4 @@ if __name__ == "__main__":
     print("Starting autoclicker")
     auto = Autoclicker(keyboard.Key.f7, 1, Button.left)
     auto.start()
+
