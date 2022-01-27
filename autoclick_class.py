@@ -1,27 +1,32 @@
 from pynput import keyboard
+from pynput.mouse import Button, Controller
 from threading import Thread
 import time
 
 
 class Autoclicker:
     """This is the class used for the Autoclicker program.
-    Parameters : -trigger_key (string or key name from pynput; key to press to trigger the autoclick)
-                 -sleep_time (int or float, time between clicks)
+    Parameters : - trigger_key (string or key name from pynput, key to press to trigger the autoclick)
+                 - sleep_time (int or float, time between clicks)
+                 - click_type (pynput button, what button to click with)
     """
 
     # -1 is off, 1 is on, and 0 is for shutting down
     state = -1
 
-    def __init__(self, trigger_key, sleep_time):
+    def __init__(self, trigger_key, sleep_time, click_type):
         self.trigger_key = trigger_key
         self.sleep_time = sleep_time
+        self.click_type = click_type
 
     def click_loop(self):
+        mouse = Controller()
         while self.state:
             while self.state == 1:
                 if not self.state:  # stop check
                     break
-                print("Click")  # TODO : real click instead of a placeholder
+                print("Click")
+                mouse.click(self.click_type)
                 time.sleep(self.sleep_time)
 
     def on_press(self, key):
@@ -46,5 +51,5 @@ class Autoclicker:
 
 if __name__ == "__main__":
     print("Starting autoclicker")
-    auto = Autoclicker(keyboard.Key.f7, 5)
+    auto = Autoclicker(keyboard.Key.f7, 1, Button.left)
     auto.start()
