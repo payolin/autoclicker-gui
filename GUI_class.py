@@ -19,7 +19,7 @@ class GUI:
 
         trigger_button = ttk.Button(
             trigger_button_frame,
-            text="Change autoclick activation key...",
+            text="Change autoclick activation key..."
         )
         trigger_button.pack(side="bottom")
 
@@ -61,10 +61,16 @@ class GUI:
             sleep_time_selector_frame,
             textvariable=selected_sleep_time
         )
-        sleep_time_selector.pack(side="bottom")
+        sleep_time_selector.pack()
 
-        sleep_time_selector_label = ttk.Label(sleep_time_selector_frame, text = "Time between clicks, in seconds:")
+        sleep_time_selector_label = ttk.Label(sleep_time_selector_frame, text="Delay between clicks, in seconds:")
         sleep_time_selector_label.pack(side="top")
+
+        # start & stop button-------------------------------------------------------------------------------------------
+        start_button = ttk.Button(
+            self.root, text="Start autoclicker")
+        start_button.grid(column=0, row=1, columnspan=3, pady=10, sticky="EW")
+
         self.root.tk.mainloop()
 
 
