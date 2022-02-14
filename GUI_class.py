@@ -1,9 +1,19 @@
+import time
 import tkinter as tk
 from tkinter import ttk
+from threading import Thread
+
+from autoclick_class import Autoclicker
 
 
-class GUI:
+class AutoclickGui:
     root = tk.Tk()
+
+    def __init__(self, clicker: Autoclicker):
+        self.clicker = clicker
+
+    def mainloop(self):
+        self.root.tk.mainloop()
 
     def build(self):
         # grid building-------------------------------------------------------------------------------------------------
@@ -61,19 +71,38 @@ class GUI:
             sleep_time_selector_frame,
             textvariable=selected_sleep_time
         )
-        sleep_time_selector.pack()
+        sleep_time_selector.pack(side="bottom")
 
         sleep_time_selector_label = ttk.Label(sleep_time_selector_frame, text="Delay between clicks, in seconds:")
         sleep_time_selector_label.pack(side="top")
 
         # start & stop button-------------------------------------------------------------------------------------------
-        start_button = ttk.Button(
-            self.root, text="Start autoclicker")
-        start_button.grid(column=0, row=1, columnspan=3, pady=10, sticky="EW")
+        def stop_checker():
+            while self.clicker.is_on():
+                time.sleep(0.1)
+            if start_stop_button["text"] != "Start autoclicker":
+                start_stop_button["text"] = "Start autoclicker"
+                start_stop_button["command"] = toggle_on
 
-        self.root.tk.mainloop()
+        def toggle_on():
+            start_stop_button["text"] = "Clicker is on. Press f7 and the program will toggle autoclicking"
+            time.sleep(0.1)
+            self.clicker.start()
+            time.sleep(2)
+            start_stop_button["text"] = "Turn clicker off"
+            start_stop_button["command"] = toggle_off
+            stop_checker_thread = Thread(target=stop_checker)
+            stop_checker_thread.start()
 
+        def toggle_off():
+            self.clicker.stop()
+            start_stop_button["text"] = "Start autoclicker"
+            start_stop_button["command"] = toggle_on
 
-if __name__ == "__main__":
-    a = GUI()
-    a.build()
+        start_stop_button = ttk.Button(
+            self.root,
+            text="Start autoclicker",
+            command=toggle_on
+        )
+
+        start_stop_button.grid(column=0, row=1, columnspan=3, pady=10, sticky="EW")

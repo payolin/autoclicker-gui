@@ -12,13 +12,15 @@ class Autoclicker:
                  - click_type (pynput button, what button to click with)
     """
 
-    # -1 is off, 1 is on, and 0 is for shutting down
-    state = -1
+    # -1 is on but not clicking, 1 is clicking and 0 is off
+    # -1: on, 1: running, 0: off
+    state = 0
 
     def __init__(self, trigger_key, sleep_time, click_type):
         self.trigger_key = trigger_key
         self.sleep_time = sleep_time
         self.click_type = click_type
+        self.listener = keyboard.Listener(on_press=self.on_press)
 
     def click_loop(self):
         mouse = Controller()
@@ -41,17 +43,30 @@ class Autoclicker:
                 self.state = 0
                 return False
 
+    def stop(self):
+        self.listener.stop()
+        self.state = 0
+
     def start(self):
         """Call this function to run the autoclicker"""
+        self.state = -1
+        self.listener = keyboard.Listener(on_press=self.on_press)
+        print("clicker started")
         thr_click_loop = Thread(target=self.click_loop)
         thr_click_loop.start()
-        with keyboard.Listener(on_press=self.on_press) as listener:
-            listener.join()
-            thr_click_loop.join()
+        self.listener.start()
+
+    def is_on(self):
+        if self.state:
+            return True
+        else:
+            return False
 
 
 if __name__ == "__main__":
     print("Starting autoclicker")
     auto = Autoclicker(keyboard.Key.f7, 1, Button.left)
     auto.start()
+    time.sleep(5)
+    auto.stop()
 
