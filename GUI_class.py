@@ -16,14 +16,14 @@ class AutoclickGui(tk.Tk):
         self.title("SimpleAutoclick")
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-        self.sleep_time = tk.StringVar(value="1")
+        self.sleep_time = tk.StringVar(value="1.0")
         self.default_trigger_key = keyboard.Key.f7
-        self.default_click_type = Button.left
+        self.selected_type = tk.IntVar(value=0)
 
         self.clicker = autoclick_class.Autoclicker(
             self.default_trigger_key,
             float(self.sleep_time.get()),
-            self.default_click_type
+            self.convert_click(self.selected_type)
         )
 
         # grid building-------------------------------------------------------------------------------------------------
@@ -53,18 +53,17 @@ class AutoclickGui(tk.Tk):
         radiobutton_frame = tk.Frame(click_type_selector_frame)
         radiobutton_frame.pack(side="bottom")
 
-        selected_type = tk.IntVar()
         click_type_selector1 = tk.Radiobutton(
             radiobutton_frame,
             text="Left Click",
             value=0,
-            variable=selected_type
+            variable=self.selected_type
         )
         click_type_selector2 = tk.Radiobutton(
             radiobutton_frame,
             text="Right click",
             value=1,
-            variable=selected_type
+            variable=self.selected_type
         )
         click_type_selector1.pack(side="top")
         click_type_selector2.pack(side="bottom")
@@ -101,7 +100,7 @@ class AutoclickGui(tk.Tk):
                 self.clicker = autoclick_class.Autoclicker(
                     self.default_trigger_key,
                     float(self.sleep_time.get()),
-                    self.default_click_type
+                    self.convert_click(self.selected_type)
                 )
                 start_stop_button["text"] = "Clicker is on. Press f7 and the program will toggle auto-clicking"
                 print("t")
@@ -133,6 +132,13 @@ class AutoclickGui(tk.Tk):
         if self.clicker.is_on():
             self.clicker.stop()
         self.destroy()
+
+    def convert_click(self, int_click_type):
+        if int_click_type:
+            return Button.right
+        else:
+            return Button.left
+
 
 
 
