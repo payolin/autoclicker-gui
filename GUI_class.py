@@ -1,30 +1,41 @@
 import time
 import tkinter as tk
 from tkinter import ttk
+from tkinter.messagebox import showerror
 from threading import Thread
+from pynput import keyboard
+from pynput.mouse import Button, Controller
 
+import autoclick_class
 from autoclick_class import Autoclicker
 
 
-class AutoclickGui:
-    root = tk.Tk()
+class AutoclickGui(tk.Tk):
 
-    def __init__(self, clicker: Autoclicker):
-        self.clicker = clicker
+    def __init__(self):
+        super().__init__()
+        self.title("SimpleAutoclick")
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-    def mainloop(self):
-        self.root.tk.mainloop()
+        self.sleep_time = tk.StringVar(value="1")
+        self.default_trigger_key = keyboard.Key.f7
+        self.default_click_type = Button.left
 
-    def build(self):
+        self.clicker = autoclick_class.Autoclicker(
+            self.default_trigger_key,
+            float(self.sleep_time.get()),
+            self.default_click_type
+        )
+
         # grid building-------------------------------------------------------------------------------------------------
-        self.root.rowconfigure(0, weight=3)
-        self.root.rowconfigure(1, weight=1)
-        self.root.columnconfigure(0, weight=1)
-        self.root.columnconfigure(2, weight=1)
-        self.root.columnconfigure(3, weight=1)
+        self.rowconfigure(0, weight=3)
+        self.rowconfigure(1, weight=1)
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(2, weight=1)
+        self.columnconfigure(3, weight=1)
 
-        # trigger selection button and label----------------------------------------------------------------------------
-        trigger_button_frame = ttk.Frame(self.root)
+        # trigger selection----------------------------------------------------------------------------
+        trigger_button_frame = ttk.Frame(self)
         trigger_button_frame.grid(row=0, column=0, padx=10, pady=20)
 
         trigger_button = ttk.Button(
@@ -37,7 +48,7 @@ class AutoclickGui:
         trigger_button_label.pack(side="top")
 
         # click type selector-------------------------------------------------------------------------------------------
-        click_type_selector_frame = ttk.Frame(self.root)
+        click_type_selector_frame = ttk.Frame(self)
         click_type_selector_frame.grid(row=0, column=1, padx=20)
 
         radiobutton_frame = ttk.Frame(click_type_selector_frame)
@@ -63,13 +74,12 @@ class AutoclickGui:
         click_type_selector_label.pack(side="top")
 
         # sleep time selector-------------------------------------------------------------------------------------------
-        sleep_time_selector_frame = ttk.Frame(self.root)
+        sleep_time_selector_frame = ttk.Frame(self)
         sleep_time_selector_frame.grid(row=0, column=2, padx=10, pady=20)
 
-        selected_sleep_time = tk.StringVar()
         sleep_time_selector = ttk.Entry(
             sleep_time_selector_frame,
-            textvariable=selected_sleep_time
+            textvariable=self.sleep_time
         )
         sleep_time_selector.pack(side="bottom")
 
@@ -85,14 +95,28 @@ class AutoclickGui:
                 start_stop_button["command"] = toggle_on
 
         def toggle_on():
-            start_stop_button["text"] = "Clicker is on. Press f7 and the program will toggle autoclicking"
-            time.sleep(0.1)
-            self.clicker.start()
-            time.sleep(2)
-            start_stop_button["text"] = "Turn clicker off"
-            start_stop_button["command"] = toggle_off
-            stop_checker_thread = Thread(target=stop_checker)
-            stop_checker_thread.start()
+            try:
+                assert float(self.sleep_time.get()) > 0
+                print(self.sleep_time.get())
+
+                self.clicker = autoclick_class.Autoclicker(
+                    self.default_trigger_key,
+                    float(self.sleep_time.get()),
+                    self.default_click_type
+                )
+                start_stop_button["text"] = "Clicker is on. Press f7 and the program will toggle auto-clicking"
+                print("t")
+                time.sleep(2)
+                self.clicker.start()
+                start_stop_button["text"] = ""
+                time.sleep(2)
+                start_stop_button["text"] = "Turn clicker off"
+                start_stop_button["command"] = toggle_off
+                stop_checker_thread = Thread(target=stop_checker)
+                stop_checker_thread.start()
+
+            except (ValueError, AssertionError):
+                showerror("Invalid time", "Please select a valid delay time")
 
         def toggle_off():
             self.clicker.stop()
@@ -100,9 +124,19 @@ class AutoclickGui:
             start_stop_button["command"] = toggle_on
 
         start_stop_button = ttk.Button(
-            self.root,
+            self,
             text="Start autoclicker",
             command=toggle_on
         )
-
         start_stop_button.grid(column=0, row=1, columnspan=3, pady=10, sticky="EW")
+
+    def on_closing(self):
+        if self.clicker.is_on():
+            self.clicker.stop()
+        self.destroy()
+
+
+
+
+
+

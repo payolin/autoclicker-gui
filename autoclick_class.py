@@ -39,19 +39,19 @@ class Autoclicker:
                 self.state *= -1  # changes -1 to 1 and 1 to -1
                 print(f"state = {self.state}")
             case keyboard.Key.esc:
-                print("Exiting autoclicker...")
-                self.state = 0
-                return False
+                self.stop()
 
     def stop(self):
         self.listener.stop()
         self.state = 0
+        print("Exiting program")
+
 
     def start(self):
         """Call this function to run the autoclicker"""
+        time.sleep(4)
         self.state = -1
         self.listener = keyboard.Listener(on_press=self.on_press)
-        print("clicker started")
         thr_click_loop = Thread(target=self.click_loop)
         thr_click_loop.start()
         self.listener.start()
