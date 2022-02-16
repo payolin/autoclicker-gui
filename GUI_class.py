@@ -9,6 +9,13 @@ import autoclick_class
 from autoclick_class import Autoclicker
 
 
+def int_to_click(int_click_type):  # Used to convert the radiobutton variable to a usable click type
+    if int_click_type:
+        return Button.right
+    else:
+        return Button.left
+
+
 class AutoclickGui(tk.Tk):
 
     def __init__(self):
@@ -17,13 +24,13 @@ class AutoclickGui(tk.Tk):
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         self.sleep_time = tk.StringVar(value="1.0")
-        self.default_trigger_key = keyboard.Key.f7
+        self.trigger_key = keyboard.Key.f7
         self.selected_type = tk.IntVar(value=0)
 
         self.clicker = autoclick_class.Autoclicker(
-            self.default_trigger_key,
+            self.trigger_key,
             float(self.sleep_time.get()),
-            self.convert_click(self.selected_type)
+            int_to_click(self.selected_type)
         )
 
         # grid building-------------------------------------------------------------------------------------------------
@@ -33,17 +40,29 @@ class AutoclickGui(tk.Tk):
         self.columnconfigure(2, weight=1)
         self.columnconfigure(3, weight=1)
 
-        # trigger selection----------------------------------------------------------------------------
+        # trigger selection---------------------------------------------------------------------------------------------
+        def on_press(key):
+            self.trigger_key = key
+            return False
+
+        def change_trigger_key():
+            with keyboard.Listener(on_press=on_press) as li:
+                li.join()
+            trigger_button_label["text"] = f"Current selected key: {self.trigger_key}"
+
         trigger_button_frame = tk.Frame(self)
         trigger_button_frame.grid(row=0, column=0, padx=10, pady=20)
 
         trigger_button = tk.Button(
             trigger_button_frame,
-            text="Change autoclick activation key..."
+            text="Change autoclick activation key...",
+            command=change_trigger_key
         )
         trigger_button.pack(side="bottom")
 
-        trigger_button_label = tk.Label(trigger_button_frame, text="Current selected key:")
+        # str_selected_key = str(self.trigger_key)
+        # str_selected_key.replace
+        trigger_button_label = tk.Label(trigger_button_frame, text=f"Current selected key: {self.trigger_key}")
         trigger_button_label.pack(side="top")
 
         # click type selector-------------------------------------------------------------------------------------------
@@ -95,24 +114,17 @@ class AutoclickGui(tk.Tk):
         def toggle_on():
             try:
                 assert float(self.sleep_time.get()) > 0
-                print(self.sleep_time.get())
 
                 self.clicker = autoclick_class.Autoclicker(
-                    self.default_trigger_key,
+                    self.trigger_key,
                     float(self.sleep_time.get()),
-                    self.convert_click(self.selected_type)
+                    int_to_click(self.selected_type)
                 )
-                start_stop_button["text"] = "Clicker is on. Press f7 and the program will toggle auto-clicking"
-                print("t")
-                time.sleep(2)
                 self.clicker.start()
-                start_stop_button["text"] = ""
-                time.sleep(2)
                 start_stop_button["text"] = "Turn clicker off"
                 start_stop_button["command"] = toggle_off
                 stop_checker_thread = Thread(target=stop_checker)
                 stop_checker_thread.start()
-
             except (ValueError, AssertionError):
                 showerror("Invalid time", "Please select a valid delay time")
 
@@ -132,16 +144,3 @@ class AutoclickGui(tk.Tk):
         if self.clicker.is_on():
             self.clicker.stop()
         self.destroy()
-
-    def convert_click(self, int_click_type):
-        if int_click_type:
-            return Button.right
-        else:
-            return Button.left
-
-
-
-
-
-
-

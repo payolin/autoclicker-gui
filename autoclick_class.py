@@ -46,7 +46,6 @@ class Autoclicker:
         self.state = 0
         print("Exiting program")
 
-
     def start(self):
         """Call this function to run the autoclicker"""
         time.sleep(4)
