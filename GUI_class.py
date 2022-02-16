@@ -1,6 +1,5 @@
 import time
 import tkinter as tk
-from tkinter import ttk
 from tkinter.messagebox import showerror
 from threading import Thread
 from pynput import keyboard
@@ -35,33 +34,33 @@ class AutoclickGui(tk.Tk):
         self.columnconfigure(3, weight=1)
 
         # trigger selection----------------------------------------------------------------------------
-        trigger_button_frame = ttk.Frame(self)
+        trigger_button_frame = tk.Frame(self)
         trigger_button_frame.grid(row=0, column=0, padx=10, pady=20)
 
-        trigger_button = ttk.Button(
+        trigger_button = tk.Button(
             trigger_button_frame,
             text="Change autoclick activation key..."
         )
         trigger_button.pack(side="bottom")
 
-        trigger_button_label = ttk.Label(trigger_button_frame, text="Current selected key:")
+        trigger_button_label = tk.Label(trigger_button_frame, text="Current selected key:")
         trigger_button_label.pack(side="top")
 
         # click type selector-------------------------------------------------------------------------------------------
-        click_type_selector_frame = ttk.Frame(self)
+        click_type_selector_frame = tk.Frame(self)
         click_type_selector_frame.grid(row=0, column=1, padx=20)
 
-        radiobutton_frame = ttk.Frame(click_type_selector_frame)
+        radiobutton_frame = tk.Frame(click_type_selector_frame)
         radiobutton_frame.pack(side="bottom")
 
         selected_type = tk.IntVar()
-        click_type_selector1 = ttk.Radiobutton(
+        click_type_selector1 = tk.Radiobutton(
             radiobutton_frame,
             text="Left Click",
             value=0,
             variable=selected_type
         )
-        click_type_selector2 = ttk.Radiobutton(
+        click_type_selector2 = tk.Radiobutton(
             radiobutton_frame,
             text="Right click",
             value=1,
@@ -70,20 +69,20 @@ class AutoclickGui(tk.Tk):
         click_type_selector1.pack(side="top")
         click_type_selector2.pack(side="bottom")
 
-        click_type_selector_label = ttk.Label(click_type_selector_frame, text="Selected click :")
+        click_type_selector_label = tk.Label(click_type_selector_frame, text="Selected click :")
         click_type_selector_label.pack(side="top")
 
         # sleep time selector-------------------------------------------------------------------------------------------
-        sleep_time_selector_frame = ttk.Frame(self)
+        sleep_time_selector_frame = tk.Frame(self)
         sleep_time_selector_frame.grid(row=0, column=2, padx=10, pady=20)
 
-        sleep_time_selector = ttk.Entry(
+        sleep_time_selector = tk.Entry(
             sleep_time_selector_frame,
             textvariable=self.sleep_time
         )
         sleep_time_selector.pack(side="bottom")
 
-        sleep_time_selector_label = ttk.Label(sleep_time_selector_frame, text="Delay between clicks, in seconds:")
+        sleep_time_selector_label = tk.Label(sleep_time_selector_frame, text="Delay between clicks, in seconds:")
         sleep_time_selector_label.pack(side="top")
 
         # start & stop button-------------------------------------------------------------------------------------------
@@ -123,7 +122,7 @@ class AutoclickGui(tk.Tk):
             start_stop_button["text"] = "Start autoclicker"
             start_stop_button["command"] = toggle_on
 
-        start_stop_button = ttk.Button(
+        start_stop_button = tk.Button(
             self,
             text="Start autoclicker",
             command=toggle_on
