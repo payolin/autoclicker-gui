@@ -57,6 +57,7 @@ class AutoclickGui(tk.Tk):
             text="Change autoclick activation key...",
             command=change_trigger_key
         )
+
         trigger_button.pack(side="bottom")
 
         # str_selected_key = str(self.trigger_key)
