@@ -2,7 +2,7 @@
 A simple autoclicker program made with python using tkinter and pynput modules
 
 ---Installation---
- 1. Make sure tkinter and pynput modules are installed (A compiled version wil be uploaded soon to avoid that dependency)
+ 1. Make sure tkinter and pynput modules are installed (A compiled version will be uploaded soon to avoid that dependency)
  2. Click on code > download zip > extract it or clone the repository
 
 ---Usage---
