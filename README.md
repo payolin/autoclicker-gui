@@ -19,3 +19,4 @@ A simple autoclicker program made with python using tkinter and pynput modules
 ---TODO---
 - Disable setting entries when program is running
 - Implement a total click counter
+- Actually release
