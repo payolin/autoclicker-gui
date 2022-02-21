@@ -17,7 +17,6 @@ def int_to_click(int_click_type):  # Used to convert the radiobutton variable to
 
 
 class AutoclickGui(tk.Tk):
-
     def __init__(self):
         super().__init__()
         self.title("SimpleAutoclick")
@@ -118,7 +117,7 @@ class AutoclickGui(tk.Tk):
                 self.clicker = autoclick_class.Autoclicker(
                     self.trigger_key,
                     float(self.sleep_time.get()),
-                    int_to_click(self.selected_type)
+                    int_to_click(self.selected_type.get())
                 )
                 self.clicker.start()
                 start_stop_button["text"] = "Turn clicker off"
