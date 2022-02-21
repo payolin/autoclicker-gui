@@ -1,4 +1,4 @@
-# autoclicker-gui
+# simple-autoclick
 A simple autoclicker program made with python using tkinter and pynput modules
 
 ---Installation---
