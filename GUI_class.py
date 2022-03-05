@@ -40,19 +40,39 @@ class AutoclickGui(tk.Tk):
 
         # trigger selection---------------------------------------------------------------------------------------------
         def on_press(key):  # used as a target for a keyboard.Listener
-            self.trigger_key = key
+            if key != keyboard.Key.esc:
+                self.trigger_key = key
+
+            sleep_time_selector_label["state"] = "normal"
+            click_type_selector_label["state"] = "normal"
+            trigger_button_label["state"] = "normal"
+            start_stop_button["state"] = "normal"
+            click_type_selector1["state"] = "normal"
+            click_type_selector2["state"] = "normal"
+            sleep_time_selector["state"] = "normal"
+
+            trigger_button_label["text"] = f"Current selected key: {self.trigger_key}"
+            trigger_button["text"] = "Change autoclick activation key...      "
             return False
 
         def change_trigger_key():  # used as a command for a widget
-            with keyboard.Listener(on_press=on_press) as li:
-                li.join()
-            trigger_button_label["text"] = f"Current selected key: {self.trigger_key}"
+            change_trigger_key_thread = keyboard.Listener(on_press=on_press)
+            sleep_time_selector_label["state"] = "disabled"
+            click_type_selector_label["state"] = "disabled"
+            trigger_button_label["state"] = "disabled"
+            start_stop_button["state"] = "disabled"
+            click_type_selector1["state"] = "disabled"
+            click_type_selector2["state"] = "disabled"
+            sleep_time_selector["state"] = "disabled"
+            trigger_button["text"] = "Press a key to select it as a trigger..."
+            change_trigger_key_thread.start()
 
         trigger_button_frame = tk.Frame(self)
         trigger_button_frame.grid(row=0, column=0, padx=10, pady=20)
 
         trigger_button = tk.Button(
             trigger_button_frame,
+            width=30,
             text="Change autoclick activation key...",
             command=change_trigger_key
         )
@@ -73,12 +93,14 @@ class AutoclickGui(tk.Tk):
 
         click_type_selector1 = tk.Radiobutton(
             radiobutton_frame,
+            width=15,
             text="Left Click",
             value=0,
             variable=self.selected_type
         )
         click_type_selector2 = tk.Radiobutton(
             radiobutton_frame,
+            width=15,
             text="Right click",
             value=1,
             variable=self.selected_type
@@ -99,7 +121,10 @@ class AutoclickGui(tk.Tk):
         )
         sleep_time_selector.pack(side="bottom")
 
-        sleep_time_selector_label = tk.Label(sleep_time_selector_frame, text="Delay between clicks, in seconds:")
+        sleep_time_selector_label = tk.Label(
+            sleep_time_selector_frame, width=30,
+            text="Delay between clicks, in seconds:"
+        )
         sleep_time_selector_label.pack(side="top")
 
         # start & stop button-------------------------------------------------------------------------------------------
@@ -108,6 +133,13 @@ class AutoclickGui(tk.Tk):
                 time.sleep(0.1)
             if start_stop_button["text"] != "Start autoclicker":
                 start_stop_button["text"] = "Start autoclicker"
+                sleep_time_selector_label["state"] = "normal"
+                click_type_selector_label["state"] = "normal"
+                trigger_button_label["state"] = "normal"
+                trigger_button["state"] = "normal"
+                click_type_selector1["state"] = "normal"
+                click_type_selector2["state"] = "normal"
+                sleep_time_selector["state"] = "normal"
                 start_stop_button["command"] = toggle_on
 
         def toggle_on():  # used as a command for a widget, defines what is performed on launch
@@ -122,6 +154,7 @@ class AutoclickGui(tk.Tk):
                 )
                 self.clicker.start()
 
+                # disable all the widgets
                 sleep_time_selector_label["state"] = "disabled"
                 click_type_selector_label["state"] = "disabled"
                 trigger_button_label["state"] = "disabled"
@@ -139,6 +172,8 @@ class AutoclickGui(tk.Tk):
                 showerror("Invalid time", "Please select a valid delay time")
 
         def toggle_off():  # used as a command for a widget
+
+            # re-enable all the widgets
             sleep_time_selector_label["state"] = "normal"
             click_type_selector_label["state"] = "normal"
             trigger_button_label["state"] = "normal"
