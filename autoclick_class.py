@@ -27,7 +27,6 @@ class Autoclicker:
             while self.state == 1:
                 if not self.state:  # stop check
                     break
-                print("Click")
                 mouse.click(self.click_type)
                 time.sleep(self.sleep_time)
 
@@ -36,14 +35,12 @@ class Autoclicker:
         match key:
             case self.trigger_key:
                 self.state *= -1  # changes -1 to 1 and 1 to -1
-                print(f"state = {self.state}")
             case keyboard.Key.esc:
                 self.stop()
 
     def stop(self):
         self.listener.stop()
         self.state = 0
-        print("Exiting program")
 
     def start(self):
         """Call this function to run the autoclicker"""
@@ -60,6 +57,7 @@ class Autoclicker:
             return False
 
 
+# Debug
 if __name__ == "__main__":
     print("Starting autoclicker")
     auto = Autoclicker(keyboard.Key.f7, 1, Button.left)
