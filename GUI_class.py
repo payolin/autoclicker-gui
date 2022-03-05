@@ -3,9 +3,8 @@ import tkinter as tk
 from tkinter.messagebox import showerror
 from threading import Thread
 from pynput import keyboard
-from pynput.mouse import Button, Controller
+from pynput.mouse import Button
 
-import autoclick_class
 from autoclick_class import Autoclicker
 
 
@@ -22,11 +21,11 @@ class AutoclickGui(tk.Tk):
         self.title("SimpleAutoclick")
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
-        self.sleep_time = tk.StringVar(value="1.0")
-        self.trigger_key = keyboard.Key.f7
-        self.selected_type = tk.IntVar(value=0)
+        self.sleep_time = tk.StringVar(value="1.0")   # |
+        self.trigger_key = keyboard.Key.f7            # |  default values, update is performed on
+        self.selected_type = tk.IntVar(value=0)       # |  clicker launch
 
-        self.clicker = autoclick_class.Autoclicker(
+        self.clicker = Autoclicker(
             self.trigger_key,
             float(self.sleep_time.get()),
             int_to_click(self.selected_type)
@@ -40,11 +39,11 @@ class AutoclickGui(tk.Tk):
         self.columnconfigure(3, weight=1)
 
         # trigger selection---------------------------------------------------------------------------------------------
-        def on_press(key):
+        def on_press(key):  # used as a target for a keyboard.Listener
             self.trigger_key = key
             return False
 
-        def change_trigger_key():
+        def change_trigger_key():  # used as a command for a widget
             with keyboard.Listener(on_press=on_press) as li:
                 li.join()
             trigger_button_label["text"] = f"Current selected key: {self.trigger_key}"
@@ -104,31 +103,50 @@ class AutoclickGui(tk.Tk):
         sleep_time_selector_label.pack(side="top")
 
         # start & stop button-------------------------------------------------------------------------------------------
-        def stop_checker():
+        def stop_checker():  # used as a command for a thread
             while self.clicker.is_on():
                 time.sleep(0.1)
             if start_stop_button["text"] != "Start autoclicker":
                 start_stop_button["text"] = "Start autoclicker"
                 start_stop_button["command"] = toggle_on
 
-        def toggle_on():
+        def toggle_on():  # used as a command for a widget, defines what is performed on launch
             try:
                 assert float(self.sleep_time.get()) > 0
 
-                self.clicker = autoclick_class.Autoclicker(
+                # update settings
+                self.clicker = Autoclicker(
                     self.trigger_key,
                     float(self.sleep_time.get()),
                     int_to_click(self.selected_type.get())
                 )
                 self.clicker.start()
-                start_stop_button["text"] = "Turn clicker off"
-                start_stop_button["command"] = toggle_off
+
+                sleep_time_selector_label["state"] = "disabled"
+                click_type_selector_label["state"] = "disabled"
+                trigger_button_label["state"] = "disabled"
+                trigger_button["state"] = "disabled"
+                click_type_selector1["state"] = "disabled"
+                click_type_selector2["state"] = "disabled"
+                sleep_time_selector["state"] = "disabled"
+
+                start_stop_button["text"] = f"Autoclicker is running. Press {self.trigger_key} to start clicking."
                 stop_checker_thread = Thread(target=stop_checker)
                 stop_checker_thread.start()
+                start_stop_button["text"] = "Stop autoclicker (you can also press esc)"
+                start_stop_button["command"] = toggle_off
             except (ValueError, AssertionError):
                 showerror("Invalid time", "Please select a valid delay time")
 
-        def toggle_off():
+        def toggle_off():  # used as a command for a widget
+            sleep_time_selector_label["state"] = "normal"
+            click_type_selector_label["state"] = "normal"
+            trigger_button_label["state"] = "normal"
+            trigger_button["state"] = "normal"
+            click_type_selector1["state"] = "normal"
+            click_type_selector2["state"] = "normal"
+            sleep_time_selector["state"] = "normal"
+
             self.clicker.stop()
             start_stop_button["text"] = "Start autoclicker"
             start_stop_button["command"] = toggle_on

@@ -2,7 +2,6 @@ from pynput import keyboard
 from pynput.mouse import Button, Controller
 from threading import Thread
 import time
-# import tkinter as tk
 
 
 class Autoclicker:
@@ -48,7 +47,6 @@ class Autoclicker:
 
     def start(self):
         """Call this function to run the autoclicker"""
-        time.sleep(4)
         self.state = -1
         self.listener = keyboard.Listener(on_press=self.on_press)
         thr_click_loop = Thread(target=self.click_loop)
@@ -68,4 +66,3 @@ if __name__ == "__main__":
     auto.start()
     time.sleep(5)
     auto.stop()
-
