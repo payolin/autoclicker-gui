@@ -14,7 +14,7 @@ A simple autoclicker program made with python using tkinter and pynput modules
 
 
 ---Known Bugs---
-- Clicking "change activation key" causes a not responding issue on Windows (works as intented in Linux)
+- ~~Clicking "change activation key" causes a not responding issue on Windows (works as intented in Linux)~~ should be fixed
 
 ---TODO---
 - Disable setting entries when program is running
