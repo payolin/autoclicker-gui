@@ -15,10 +15,11 @@ class Autoclicker:
     # -1: on, 1: running, 0: off
     state = 0
 
-    def __init__(self, trigger_key, sleep_time, click_type):
+    def __init__(self, trigger_key, sleep_time, click_type, start_clicks):
         self.trigger_key = trigger_key
         self.sleep_time = sleep_time
         self.click_type = click_type
+        self.clicks_count = start_clicks
         self.listener = keyboard.Listener(on_press=self.on_press)
 
     def click_loop(self):
@@ -28,6 +29,7 @@ class Autoclicker:
                 if not self.state:  # stop check
                     break
                 mouse.click(self.click_type)
+                self.clicks_count += 1
                 time.sleep(self.sleep_time)
 
     def on_press(self, key):

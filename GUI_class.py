@@ -16,30 +16,34 @@ def int_to_click(int_click_type):  # Used to convert the radiobutton variable to
 
 
 class AutoclickGui(tk.Tk):
+    """This is a subclass of a tkinter.Tk(). It is used to manage a gui for the autoclick class
+    Just make an instance of it to launch the gui, don't forget to mainloop"""
     def __init__(self):
         super().__init__()
         self.title("SimpleAutoclick")
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         self.sleep_time = tk.StringVar(value="1.0")   # |
-        self.trigger_key = keyboard.Key.f7            # |  default values, update is performed on
-        self.selected_type = tk.IntVar(value=0)       # |  clicker launch
+        self.trigger_key = keyboard.Key.f7            # |  Default values, update is performed on gui launch.
+        self.selected_type = tk.IntVar(value=0)       # |  Used as arguments to call the autoclick class
 
         self.clicker = Autoclicker(
             self.trigger_key,
             float(self.sleep_time.get()),
-            int_to_click(self.selected_type)
+            int_to_click(self.selected_type),
+            0
         )
 
         # grid building-------------------------------------------------------------------------------------------------
-        self.rowconfigure(0, weight=3)
+        self.rowconfigure(0, weight=6)
         self.rowconfigure(1, weight=1)
+        self.rowconfigure(2, weight=2)
         self.columnconfigure(0, weight=1)
         self.columnconfigure(2, weight=1)
         self.columnconfigure(3, weight=1)
 
         # trigger selection---------------------------------------------------------------------------------------------
-        def on_press(key):  # used as a target for a keyboard.Listener
+        def trigger_listener_on_press(key):  # used as a target for a keyboard.Listener
             if key != keyboard.Key.esc:
                 self.trigger_key = key
 
@@ -52,11 +56,11 @@ class AutoclickGui(tk.Tk):
             sleep_time_selector["state"] = "normal"
 
             trigger_button_label["text"] = f"Current selected key: {self.trigger_key}"
-            trigger_button["text"] = "Change autoclick activation key...      "
+            trigger_button["text"] = "Change autoclick activation key..."
             return False
 
         def change_trigger_key():  # used as a command for a widget
-            change_trigger_key_thread = keyboard.Listener(on_press=on_press)
+            change_trigger_key_thread = keyboard.Listener(on_press=trigger_listener_on_press)
             sleep_time_selector_label["state"] = "disabled"
             click_type_selector_label["state"] = "disabled"
             trigger_button_label["state"] = "disabled"
@@ -79,8 +83,6 @@ class AutoclickGui(tk.Tk):
 
         trigger_button.pack(side="bottom")
 
-        # str_selected_key = str(self.trigger_key)
-        # str_selected_key.replace
         trigger_button_label = tk.Label(trigger_button_frame, text=f"Current selected key: {self.trigger_key}")
         trigger_button_label.pack(side="top")
 
@@ -127,6 +129,18 @@ class AutoclickGui(tk.Tk):
         )
         sleep_time_selector_label.pack(side="top")
 
+        # click counter ------------------------------------------------------------------------------------------------
+        click_counter = tk.Label(
+            self,
+            text=f"Total number of clicks : 0"
+        )
+
+        click_counter.grid(column=0, row=1, columnspan=3)
+
+        def update_clicker_counter():  # used as a target for the updater thread
+            while self.clicker.is_on():
+                click_counter["text"] = f"Total number of clicks : {self.clicker.clicks_count}"
+
         # start & stop button-------------------------------------------------------------------------------------------
         def stop_checker():  # used as a command for a thread
             while self.clicker.is_on():
@@ -150,9 +164,14 @@ class AutoclickGui(tk.Tk):
                 self.clicker = Autoclicker(
                     self.trigger_key,
                     float(self.sleep_time.get()),
-                    int_to_click(self.selected_type.get())
+                    int_to_click(self.selected_type.get()),
+                    self.clicker.clicks_count
                 )
+                clicks_count_thread = Thread(target=update_clicker_counter)  # procedure define with the widget
+
+                # starting clicking and count updater threads
                 self.clicker.start()
+                clicks_count_thread.start()
 
                 # disable all the widgets
                 sleep_time_selector_label["state"] = "disabled"
@@ -172,7 +191,6 @@ class AutoclickGui(tk.Tk):
                 showerror("Invalid time", "Please select a valid delay time")
 
         def toggle_off():  # used as a command for a widget
-
             # re-enable all the widgets
             sleep_time_selector_label["state"] = "normal"
             click_type_selector_label["state"] = "normal"
@@ -191,7 +209,7 @@ class AutoclickGui(tk.Tk):
             text="Start autoclicker",
             command=toggle_on
         )
-        start_stop_button.grid(column=0, row=1, columnspan=3, pady=10, sticky="EW")
+        start_stop_button.grid(column=0, row=2, columnspan=3, pady=10, sticky="EW")
 
     def on_closing(self):
         if self.clicker.is_on():
