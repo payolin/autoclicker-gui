@@ -17,6 +17,6 @@ A simple autoclicker program made with python using tkinter and pynput modules
 - ~~Clicking "change activation key" causes a not responding issue on Windows (works as intented in Linux)~~ should be fixed
 
 ---TODO---
-- Disable setting entries when program is running
-- Implement a total click counter
+- Scrap the esc exit feature because it's just annoying
+- find a way to make the program run without opening a empty python window
 - Actually release
