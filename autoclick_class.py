@@ -34,11 +34,8 @@ class Autoclicker:
 
     def on_press(self, key):
         """Controls state depending on key press"""
-        match key:
-            case self.trigger_key:
-                self.state *= -1  # changes -1 to 1 and 1 to -1
-            case keyboard.Key.esc:
-                self.stop()
+        if key == self.trigger_key:
+            self.state *= -1
 
     def stop(self):
         self.listener.stop()

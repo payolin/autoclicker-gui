@@ -1,4 +1,3 @@
-import time
 import tkinter as tk
 from tkinter.messagebox import showerror
 from threading import Thread
@@ -47,6 +46,7 @@ class AutoclickGui(tk.Tk):
             if key != keyboard.Key.esc:
                 self.trigger_key = key
 
+            # enable widgets when a key has been selected
             sleep_time_selector_label["state"] = "normal"
             click_type_selector_label["state"] = "normal"
             trigger_button_label["state"] = "normal"
@@ -54,13 +54,16 @@ class AutoclickGui(tk.Tk):
             click_type_selector1["state"] = "normal"
             click_type_selector2["state"] = "normal"
             sleep_time_selector["state"] = "normal"
+            click_counter["state"] = "normal"
 
-            trigger_button_label["text"] = f"Current selected key: {self.trigger_key}"
+            trigger_button_label["text"] = f"Current selected key : {self.trigger_key}"
             trigger_button["text"] = "Change autoclick activation key..."
             return False
 
         def change_trigger_key():  # used as a command for a widget
             change_trigger_key_thread = keyboard.Listener(on_press=trigger_listener_on_press)
+
+            # disable widgets during key selection
             sleep_time_selector_label["state"] = "disabled"
             click_type_selector_label["state"] = "disabled"
             trigger_button_label["state"] = "disabled"
@@ -68,6 +71,8 @@ class AutoclickGui(tk.Tk):
             click_type_selector1["state"] = "disabled"
             click_type_selector2["state"] = "disabled"
             sleep_time_selector["state"] = "disabled"
+            click_counter["state"] = "disabled"
+
             trigger_button["text"] = "Press a key to select it as a trigger..."
             change_trigger_key_thread.start()
 
@@ -142,20 +147,6 @@ class AutoclickGui(tk.Tk):
                 click_counter["text"] = f"Total number of clicks : {self.clicker.clicks_count}"
 
         # start & stop button-------------------------------------------------------------------------------------------
-        def stop_checker():  # used as a command for a thread
-            while self.clicker.is_on():
-                time.sleep(0.1)
-            if start_stop_button["text"] != "Start autoclicker":
-                start_stop_button["text"] = "Start autoclicker"
-                sleep_time_selector_label["state"] = "normal"
-                click_type_selector_label["state"] = "normal"
-                trigger_button_label["state"] = "normal"
-                trigger_button["state"] = "normal"
-                click_type_selector1["state"] = "normal"
-                click_type_selector2["state"] = "normal"
-                sleep_time_selector["state"] = "normal"
-                start_stop_button["command"] = toggle_on
-
         def toggle_on():  # used as a command for a widget, defines what is performed on launch
             try:
                 assert float(self.sleep_time.get()) > 0
@@ -167,7 +158,7 @@ class AutoclickGui(tk.Tk):
                     int_to_click(self.selected_type.get()),
                     self.clicker.clicks_count
                 )
-                clicks_count_thread = Thread(target=update_clicker_counter)  # procedure define with the widget
+                clicks_count_thread = Thread(target=update_clicker_counter)  # procedure defined with the widget
 
                 # starting clicking and count updater threads
                 self.clicker.start()
@@ -183,9 +174,7 @@ class AutoclickGui(tk.Tk):
                 sleep_time_selector["state"] = "disabled"
 
                 start_stop_button["text"] = f"Autoclicker is running. Press {self.trigger_key} to start clicking."
-                stop_checker_thread = Thread(target=stop_checker)
-                stop_checker_thread.start()
-                start_stop_button["text"] = "Stop autoclicker (you can also press esc)"
+                start_stop_button["text"] = "Stop autoclicker"
                 start_stop_button["command"] = toggle_off
             except (ValueError, AssertionError):
                 showerror("Invalid time", "Please select a valid delay time")
