@@ -1,5 +1,7 @@
 # simple-autoclick
 A simple autoclicker program made with python using tkinter and pynput modules
+PROJECT HAS BEEN MOVED TO https://gitlab.com/payoliin/simple-autoclick
+
 
 ---Installation---
  1. Make sure tkinter and pynput modules are installed (A compiled version will be uploaded soon to avoid that dependency)
